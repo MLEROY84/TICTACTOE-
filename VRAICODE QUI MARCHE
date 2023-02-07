@@ -1,0 +1,222 @@
+import random
+
+class TicTacToe:
+ 	 
+	def __init__(self):
+		self.plateau = []
+
+	def cr_plateau(self): #Fonction pour créer le plateau de jeu
+		for i in range(3):
+			ranges = []
+			for j in range(3):
+				ranges.append('-')
+			self.plateau.append(ranges)
+		
+	def is_plein(self): #Fonction pour verifier si le plateau est plein
+		a=0
+		for ranges in self.plateau:
+			for truc in ranges:
+				if truc!='-':
+					a+=1
+		if a>=8:
+			print('Egalité')
+			return True
+			
+
+	def m_plateau(self): #Fonction pour afficher le plateau
+		for ranges in self.plateau:
+			print(ranges,'\n')
+			 		
+	def placer(self,joueur,ranges,colonne): #Place une mark
+		if self.plateau[ranges][colonne]!='-':
+			print('case deja prise')
+			ranges, colonne=list(map(int, input("Ligne puis colonne entre 1 et 3").split()))
+			self.placer(joueur,ranges-1,colonne-1)
+			
+		else:
+				self.plateau[ranges][colonne]=joueur
+				return True
+  
+	def test_fin_jeu(self,joueur):
+		for i in range (0,3):
+			compteur=0
+			for j in range (0,3):
+				if self.plateau[i][j]==joueur:
+						compteur+=1
+      #Si il a aligné son signe 3 fois en horizontal
+			if compteur==3:
+        #le joueur est déclaré vainqueur  et donc retourné par la fonction
+				return joueur
+
+    #vérifie le joueur courant n'a pas aligné son signe sur une colonne
+		for i in range (0,3):
+			compteur=0
+			for j in range (0,3):
+				if self.plateau[j][i]==joueur:
+					compteur+=1
+      #Si il a aligné son signe 3 fois en vertical
+			if compteur==3:
+        #le joueur est déclaré vainqueur  et donc retourné par la fonction
+				return joueur
+    # Test de diagonales 1
+		compteur=0
+		for i in range (0,3):
+			if self.plateau[i][i]==joueur:
+				compteur+=1
+			if compteur==3:
+          #le joueur est déclaré vainqueur  et donc retourné par la fonction
+				return joueur
+		compteur=0
+    # Test de diagonales 2
+		for i in range (0,3):
+			if self.plateau[2-i][i]==joueur:
+				compteur+=1
+			if compteur==3:
+          #le joueur est déclaré vainqueur  et donc retourné par la fonction
+				return joueur
+          
+    #vérifie qu'il reste de la place sur le plateau en comptant les signes de tout les joueurs
+		compteur=0
+		for i in range (0,3):
+			for j in range (0,3):
+				if( self.plateau[i][j]!='-'):
+					compteur+=1
+    #Si il n'y a plus de place sur le plateau
+		if compteur==8: 
+        # On retourne vrai pour dire que le jeu est fini
+			return True
+    #Le jeu n'est pas encore fini on retourne false
+		return False
+
+
+
+	 #Bug detecte pas direct
+	
+	def start(self):
+		mode=input("Contre l'IA en joeur contre joeur ? (p/IA) : ")
+		if mode=='IA' or mode=='ia':
+			self.debutIA()
+		elif mode=='p':
+			self.debut()
+		else : 
+			print('Veuillez sélectionner un des deux modes proposer')
+			self.start()
+
+	def debutIA(self): #Le dictionnaire parti se modifie a chaue fois je comprends pas pk. Genre parti[0] va bien au début mais dès que parti[1] est crée, parti[0] change et prend la même valeur que parti[1], et pareil pour tous les autres chiffres. 
+		self.cr_plateau()
+		joueur='X'
+		parti=[0,1,2,3,4,5,6,7,8]
+		iteration=0
+		
+		while True:
+			if joueur=='X': #Fais jouer l'IA 
+				print("A l'IA de jouer")
+				self.premiercoupIA()
+				parti[iteration]=self.plateau
+				iteration+=1
+				self.m_plateau()
+				joueur='O'
+
+				print(parti) #optionnel
+
+			else : #Nous fait jouer
+				print('A ton tour',parti)
+				ranges, colonne=list(map(int, 							input("Ligne puis colonne entre 1 et 3  :  ").split()))
+				print()
+				self.placer(joueur,ranges-1,colonne-1)
+				parti[iteration]=self.plateau
+				iteration+=1
+				self.m_plateau()
+				joueur='X'
+
+				print(parti) #optionnel
+			if self.test_fin_jeu(joueur):
+				self.m_plateau()
+				print(joueur,'  a gagné !')
+				if joueur=='X':
+					self.enregistre(parti)
+					break
+				else:
+					return False 
+					break
+			
+			if self.is_plein():
+				print('égalité')
+				break
+
+	
+	def debut(self): #Fonction pour lancer le jeu
+		self.cr_plateau()
+		joueur='X'
+		parti=[]
+		while True:
+			if joueur=='X': #Fais jouer l'IA 
+				print('Au tour de',joueur, ' de jouer.')
+	
+				self.m_plateau()
+				ranges, colonne=list(map(int, 							input("Ligne puis colonne entre 1 et 3  :  ").split()))
+				print()
+	
+				self.placer(joueur,ranges-1,colonne-1)
+				joueur='O'
+
+		
+				parti.append(self.plateau)
+				print(parti)
+			else : #Nous fait jouer
+				print('Au tour de',joueur, ' de jouer.')
+	
+				self.m_plateau()
+				ranges, colonne=list(map(int, 							input("Ligne puis colonne entre 1 et 3  :  ").split()))
+				print()
+	
+				self.placer(joueur,ranges-1,colonne-1)
+		
+				parti.append(self.plateau)
+				joueur='X'
+			if self.test_fin_jeu(joueur):
+				self.m_plateau()
+				print(joueur,'  a gagné !')
+				if joueur=='X':
+					self.enregistre(parti)
+					break
+				else:
+					return False 
+					break
+			
+			if self.is_plein():
+				print('égalité')
+				break
+					
+	
+	
+			print()
+
+
+		
+	
+	def enregistrecoup(self):
+		parti=[]
+		if self.placer:
+			parti.append(self.tableau)
+		if self.debut:
+			self.enregistre(parti)
+			
+	def enregistre(self,parti): 
+		gagne=[]
+		if self.debut:
+			gagne.append(parti)
+			print(gagne)
+
+	def premiercoupIA(self): #choisit et place au hasard sur une case
+		self.placerIA(random.choice([1,2,3])-1, random.choice([1,2,3])-1)
+
+	def placerIA(self,row,line): #regarde si la case choisi est pleine ou pas
+		if self.plateau[row][line]=='0':
+			self.premiercoupIA()
+		else:
+			self.plateau[row][line]='X'
+			return True
+		
+tic_tac_toe = TicTacToe()
+tic_tac_toe.start()
