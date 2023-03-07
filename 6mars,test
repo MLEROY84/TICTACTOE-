@@ -1,0 +1,171 @@
+import random
+
+class TicTacToe:
+
+	def __init__(self,IA):
+		self.plateau = []
+		self.parti =[]
+		self.IA=IA
+		
+	def cr_plateau(self): #Fonction pour créer le plateau de jeu
+		for i in range(3):
+			ranges = []
+			for j in range(3):
+				ranges.append('-')
+			self.plateau.append(ranges)
+
+	def is_plein(self): #Fonction pour verifier si le plateau est plein
+		a=0
+		for ranges in self.plateau:
+			for truc in ranges:
+				if truc!='-':
+					a+=1
+		if a>8:
+			print('Egalité')
+			return True
+
+
+	def m_plateau(self): #Fonction pour afficher le plateau
+		for ranges in self.plateau:
+			print(ranges,'\n')
+
+	def placer(self,joueur,ranges,colonne): #Place une mark
+		if self.plateau[ranges][colonne]!='-':
+			print('Case déjà prise lol')
+			ranges, colonne=list(map(int, input("Ligne puis colonne entre 1 et 3 :").split()))
+			self.placer(joueur,ranges-1,colonne-1)
+
+		else:
+				self.plateau[ranges][colonne]=joueur
+				return True
+
+	def endgame(self,joueur):
+		if (self.plateau[0][0] == joueur and self.plateau[0][1] == joueur and self.plateau[0][2] == joueur) or (self.plateau[0][0] == joueur and self.plateau[1][0] == joueur and self.plateau[2][0] == joueur) or (self.plateau[0][0] == joueur and self.plateau[1][1] == joueur and self.plateau[2][2] == joueur) or (self.plateau[0][1] == joueur and self.plateau[1][1] == joueur and self.plateau[2][1] == joueur) or (self.plateau[0][2] == joueur and self.plateau[1][2] == joueur and self.plateau[2][2] == joueur) or (self.plateau[0][2] == joueur and self.plateau[1][1] == joueur and self.plateau[2][0] == joueur) or (self.plateau[1][0] == joueur and self.plateau[1][1] == joueur and self.plateau[1][2] == joueur) or (self.plateau[2][0] == joueur and self.plateau[2][1] == joueur and self.plateau[2][2] == joueur):
+			return True
+		return False
+	
+
+	def start(self):
+		mode=input("Contre l'IA en joueur contre joueur ? (p/IA) : ")
+		if mode=='IA' or mode=='ia':
+			self.debutIA()
+		elif mode=='p':
+			self.debut()
+		else : 
+			print('Veuillez sélectionner un des deux modes proposer')
+			self.start()
+
+	def debutIA(self):
+		self.cr_plateau()
+		joueur='X'
+		while True:
+			if joueur=='X': #Fais jouer l'IA 
+				print("A l'IA de jouer")
+				self.premiercoupIA() #CHOIXRANDOM
+				self.enregistre(self.plateau)
+				print('TEST',self.parti,'TEST')
+				self.m_plateau()
+				if self.endgame(joueur):
+					print("Bouh tu t'es fait battre par une IA")
+					if joueur=='X':
+						IA.memoire(self.IA,self.parti)
+						IA.affichage_win(self.IA) #TEST - bug encore enregistre pas coup par coup 
+						break
+					break
+				elif self.is_plein():
+					print('égalité')
+					break
+				else :
+					joueur='O'
+
+			else : #Nous fait jouer
+				print('A ton tour')
+				ranges, colonne=list(map(int, 							input("Ligne puis colonne entre 1 et 3  :  ").split()))
+				print()
+				self.placer(joueur,ranges-1,colonne-1)
+				self.m_plateau()
+				
+				if self.endgame(joueur):
+					print('Vous avez gagné ! bravo')
+					break
+				elif self.is_plein():
+					print('égalité')
+					break
+				else :
+					joueur='X'
+
+	'''def debut(self): #Fonction pour lancer le jeu
+		self.cr_plateau()
+		joueur='X'
+		parti=[]
+		while True:
+			if joueur=='X': #Fais jouer l'IA 
+				print('Au tour de',joueur, ' de jouer.')
+
+				self.m_plateau()
+				ranges, colonne=list(map(int, 							input("Ligne puis colonne entre 1 et 3  :  ").split()))
+				print()
+
+				self.placer(joueur,ranges-1,colonne-1)
+				joueur='O'
+
+
+				parti.append(self.plateau)
+				print(parti)
+			else : #Nous fait jouer
+				print('Au tour de',joueur, ' de jouer.')
+
+				self.m_plateau()
+				ranges, colonne=list(map(int, 							input("Ligne puis colonne entre 1 et 3  :  ").split()))
+				print()
+
+				self.placer(joueur,ranges-1,colonne-1)
+
+				parti.append(self.plateau)
+				joueur='X'
+			if self.test_fin_jeu(joueur):
+				self.m_plateau()
+				print(joueur,'  a gagné !')
+				if joueur=='X':
+					self.enregistre(parti)
+					break
+				else:
+					return False 
+					break
+
+			if self.is_plein():
+				print('égalité')
+				break'''
+
+	
+	def enregistre(self,coup):
+		self.parti.append(coup)
+		self.parti.append('caca')
+		
+		
+	def premiercoupIA(self): #choisit et place au hasard sur une case
+		self.placerIA(random.choice([1,2,3])-1, random.choice([1,2,3])-1)
+		
+	def placerIA(self,row,line): #regarde si la case choisi est pleine ou pas
+		if self.plateau[row][line]=='O' or self.plateau[row][line]=='X':
+			self.premiercoupIA()
+		else:
+			self.plateau[row][line]='X'
+			return True
+
+class IA:
+	def __init__(self):
+		self.arbrewin=[]
+
+	def memoire(self,partie):
+		self.arbrewin.append(partie)
+
+	def affichage_win(self): #pour voir les tests / supprimer après
+		print(self.arbrewin)
+
+	def choixrandom(self):
+		return random.choice([1,2,3])-1, random.choice([1,2,3])-1
+		
+IADEMERDE=IA()
+tic_tac_toe = TicTacToe(IADEMERDE)
+tic_tac_toe.start()
