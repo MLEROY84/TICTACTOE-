@@ -1,0 +1,255 @@
+import random
+
+
+class TicTacToe:
+
+	def __init__(self, IA):
+		self.plateau = []
+		self.parti = []
+		self.n = 0
+		self.parti_test = []
+		self.IA = IA
+
+	def cr_plateau(self):  #Fonction pour créer le plateau de jeu
+		self.plateau = []
+		for i in range(3):
+			row = []
+			for j in range(3):
+				row.append('-')
+			self.plateau.append(row)
+
+	def is_plein(self):  #Fonction pour verifier si le plateau est plein
+		a = 0
+		for row in self.plateau:
+			for truc in row:
+				if truc != '-':
+					a += 1
+		if a > 8:
+			print('Egalité')
+			return True
+
+	def m_plateau(self):  #Fonction pour afficher le plateau
+		for row in self.plateau:
+			print(row, '\n')
+
+	def placer(self, joueur, row, col):  #Place une mark
+		if self.plateau[row][col] != '-':
+			print('Case déjà prise lol')
+			row, col = list(
+			 map(int,
+			     input("Ligne puis col entre 1 et 3 :").split()))
+			self.placer(joueur, row - 1, col - 1)
+
+		else:
+			self.plateau[row][col] = joueur
+			return True
+
+	def endgame(self, joueur):
+		if (self.plateau[0][0] == joueur and self.plateau[0][1] == joueur
+		    and self.plateau[0][2] == joueur) or (
+		     self.plateau[0][0] == joueur and self.plateau[1][0] == joueur
+		     and self.plateau[2][0] == joueur) or (
+		      self.plateau[0][0] == joueur and self.plateau[1][1] == joueur
+		      and self.plateau[2][2] == joueur) or (
+		       self.plateau[0][1] == joueur and self.plateau[1][1] == joueur
+		       and self.plateau[2][1] == joueur) or (
+		        self.plateau[0][2] == joueur and self.plateau[1][2] == joueur
+		        and self.plateau[2][2] == joueur) or (
+		         self.plateau[0][2] == joueur and self.plateau[1][1] == joueur
+		         and self.plateau[2][0] == joueur) or (
+		          self.plateau[1][0] == joueur and self.plateau[1][1] == joueur
+		          and self.plateau[1][2] == joueur) or (
+		           self.plateau[2][0] == joueur and self.plateau[2][1] == joueur
+		           and self.plateau[2][2] == joueur):
+			return True
+		return False
+
+	def start(self):
+		mode = input("Contre l'IA en joueur contre joueur ? (p/IA) : ")
+		if mode == 'IA' or mode == 'ia':
+			self.debutIA()
+		elif mode == 'p':
+			self.debut()
+		else:
+			print('Veuillez sélectionner un des deux modes proposer')
+			self.start()
+
+	def reverse(self, liste):
+		liste2 = []
+		for i in liste:
+			liste2.append(i)
+		return liste2
+
+	def debutIA(self):
+		coup_coup=[]
+		self.cr_plateau()
+		self.randomplace()  #CHOIXRANDOM
+		self.m_plateau()
+		joueur = 'O'
+		
+		while True:
+			#IA.memoire(IA,plato_tempo)
+			IA.affichage_win(IA)
+			if joueur == 'X':  #Fais jouer l'IA
+				print("A l'IA de jouer")
+				IA.checkalreadyseen(IA,self.plateau,self)
+				self.m_plateau()
+				if self.endgame(joueur):
+					print("Bouh tu t'es fait battre par une IA")
+					IA.memoire(IA,coup_coup)
+					break
+				elif self.is_plein():
+					print('égalité')
+					break
+				else:
+					joueur = 'O'
+
+			else:  #Nous fait jouer
+				print('A ton tour')
+				row, col = list(map(int,input("Ligne puis col entre 1 et 3  :  ").split()))
+				print()
+				self.placer(joueur, row - 1, col - 1)
+				
+				self.m_plateau()
+
+				if self.endgame(joueur):
+					print('Vous avez gagné ! bravo')
+					break
+				elif self.is_plein():
+					print('égalité')
+					break
+				else:
+					joueur = 'X'
+			#Plateau intermédiaire ------------------------------------------------------------------------------------------
+			plato= []
+			for i in range(3):
+				row = []
+				for j in range(3):
+					row.append('-')
+				plato.append(row)
+			for i in range(len(self.plateau)):
+				for j in range(len(self.plateau[i])):
+					if self.plateau[i][j]=='X':
+						plato[i][j]='X'
+					elif self.plateau[i][j]=='O':
+						plato[i][j]='O'
+			print('plato plein',plato )
+			coup_coup.append(plato)
+			
+			
+	def debut(self): #Fonction pour lancer le jeu en pvp
+		self.cr_plateau()
+		joueur='X'
+	
+		while True:
+			if joueur=='X': #
+				print('A tour de "X"')
+				row, col = list(map(int,input("Ligne puis col entre 1 et 3  :  ").split()))
+				print()
+				self.placer(joueur, row - 1, col - 1)
+				
+				self.m_plateau()
+
+				if self.endgame(joueur):
+					print('Vous avez gagné ! bravo')
+					break
+				elif self.is_plein():
+					print('égalité')
+					break
+				else:
+					joueur = 'O'
+			else : 
+				print('Au tour de "O"')
+				row, col = list(map(int,input("Ligne puis col entre 1 et 3  :  ").split()))
+				print()
+				self.placer(joueur, row - 1, col - 1)
+				
+				self.m_plateau()
+
+				if self.endgame(joueur):
+					print('Vous avez gagné ! bravo')
+					break
+				elif self.is_plein():
+					print('égalité')
+					break
+				else:
+					joueur = 'X'
+
+	def enregistre(self, coup):
+		x=coup
+		print('selfparti',self.parti)
+		self.parti.append(x)
+		self.parti.append('p')
+
+
+	def randomplace(self):  #choisit et place au hasard sur une case
+		lin=random.choice([1,2,3])-1
+		col=random.choice([1,2,3])-1
+		if self.plateau[lin][col]!='-':
+			self.randomplace()
+		else :
+			self.plateau[lin][col]='X'
+			
+
+	def placerIA(self, lin,col):  #regarde si la case choisi est pleine ou pas
+		if self.plateau[lin,col]!='-':
+			self.randomplace()
+		else:
+			self.plateau[lin][col] = 'X'
+
+
+
+class IA:
+	arbrewin =[]
+	
+	def __init__(self, arbre):
+		self.arbre = [] #l'ATRIBUT EST PAS COMPTé JE COMPRENDS PAS
+		self.tree = arbre #ATRIBUT TEST 
+
+	def memoire(self, partie): #Enregistre les parties gagnants dans la memoire de Iannick 
+		self.arbrewin.append(partie)
+		print('arbrewin',self.arbrewin)
+
+	def affichage_win(self):  #pour voir les tests / supprimer après
+		print(self.arbrewin)
+
+	def choixrandom(self):
+		row=random.choice([1,2,3])-1
+		col=random.choice([1,2,3])-1
+		return row,col
+
+	def checkalreadyseen(self,plateau,partie): #check si le plateau actuel à déjà été jouer auparavant et que l'IA a gagner
+		possible=[]
+		if self.arbrewin==[]: #Si l'arbrewin est vide, on joue random
+			partie.randomplace()
+		else :
+			for partie in self.arbrewin:
+				for coup in range(len(partie)) :
+					if partie[coup]==plateau: #Si ce coup à déjà été joué
+						for ligne in coup:
+							for col in ligne:
+								if partie[coup][ligne][col]!=partie[coup+1][ligne][col]: #On regarde le coup d'après 
+									xchange=ligne
+									ychange=cologne
+									co=[xchange,ychange]
+									possible.append(co)
+						
+						
+			if possible!=[]:
+				return meilleurcoup(possible,partie)
+			else :
+				partie.randomplace() #Si le plateau n'a jamais été jouer, on joue random
+				print('Ce coup est random')
+			
+	def meilleurcoup(self,possible,partie): #Regarde le meilleur coup
+		if len(possible)==1:
+			partie.placerIA(partie,partie[1][1],partie[1][2])
+		else :
+			possible=sorted(possible) #Plus ce coup à été gagné, plus on va le considérer comme bon
+			partie.placerIA(partie,partie[1][1],partie[1][2])
+
+IAnnick_Noah = IA([])
+tic_tac_toe = TicTacToe(IAnnick_Noah)
+IAnnick_Noah.affichage_win()
+tic_tac_toe.start()
+
